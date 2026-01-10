@@ -973,6 +973,396 @@ This is the proper way to create reusable flow components and follows DRY (Don't
 
 ---
 
+### Question 46: Virtual Tables and External Data
+
+**Scenario**: Your company has a sales application supported by an Azure SQL database. You're developing a Power Apps app for customer service agents that must reference customer data from the sales application. The data is constantly changing, must not be replicated in Microsoft Dataverse, and some customer data is considered sensitive.
+
+**Question**: What should you implement? (Select two)
+
+**Options**:
+- A. Create a virtual table
+- B. Import the data using dataflows
+- C. Create a secured column for sensitive data
+- D. Use Power Automate to sync the data
+- E. Create calculated columns
+
+**Correct Answers**: A and C
+
+**Explanation**:
+- **Virtual tables**: Custom tables in Dataverse that have columns containing data from an external data source. They don't store data in Dataverse; they retrieve data from external sources in real-time
+- **Secured columns**: Protect field (column) data by encrypting it and restricting access
+- Virtual tables are perfect for scenarios where data must not be replicated
+- Importing or syncing would create copies (not allowed per requirements)
+- Virtual tables require a data provider to manage the connection
+
+---
+
+### Question 47: Field Level Security Configuration
+
+**Scenario**: You need to restrict access to the Social Security Number column on the Contact table. Only HR staff should be able to view and edit this column.
+
+**Question**: What configuration steps should you take? (Select all that apply)
+
+**Options**:
+- A. Enable column security on the Social Security Number column
+- B. Create a field security profile for HR staff
+- C. Enable auditing at the organization level
+- D. Grant Read and Update privileges to the field security profile
+- E. Assign the field security profile to HR staff users or teams
+
+**Correct Answers**: A, B, D, and E
+
+**Explanation**:
+Field level security requires:
+1. **Enable column security** on the specific column
+2. **Create field security profile(s)** defining who can access the column
+3. **Grant privileges** (Read, Create, Update) to the profile
+4. **Assign the profile** to users/teams who need access
+- Auditing is separate from column security
+- Users without the field security profile cannot see or edit the secured column
+- Column security works independently of entity-level security
+
+---
+
+### Question 48: Desktop Flows - Attended vs Unattended
+
+**Scenario**: You need to automate a Windows desktop application that requires entering data from emails received overnight. The automation should run at 6 AM daily with no user intervention.
+
+**Question**: Which type of desktop flow execution should you configure?
+
+**Options**:
+- A. Attended mode
+- B. Unattended mode
+- C. Background mode
+- D. Scheduled mode
+
+**Correct Answer**: B. Unattended mode
+
+**Explanation**:
+- **Attended mode**: Requires an active Windows user session; user is present and session cannot be locked
+- **Unattended mode**: Runs without user intervention; target machine must be available with all users signed out; perfect for scheduled, overnight automations
+- Unattended mode requires:
+  - Desktop flow connections configured with credentials
+  - Machine registered and available
+  - No users signed in during execution
+- "Scheduled" and "Background" are not desktop flow execution modes
+
+---
+
+### Question 49: Classic Workflows - Real-Time vs Background
+
+**Scenario**: You need to create a workflow on the Account table that updates a custom column with the previous value of Account Name when the name changes. An email should be sent when Credit Limit changes, but this can run asynchronously.
+
+**Question**: Which workflow types should you use for each requirement?
+
+**Options** (Drag and Drop):
+
+| Requirement | Workflow Type |
+|-------------|---------------|
+| Update column with previous value | Real-time workflow |
+| Send email on Credit Limit change | Background workflow |
+
+**Correct Answer**: As shown in table above
+
+**Explanation**:
+- **Real-time workflows**: Execute synchronously, can access previous column values (pre-images), run immediately
+- **Background workflows**: Execute asynchronously, cannot access previous values, better for non-critical operations
+- Accessing previous/original values requires real-time execution
+- Email notifications can run in background for better performance
+- Note: Classic workflows are deprecated; use Power Automate for new automations
+
+---
+
+### Question 50: Many-to-Many (N:N) Relationships
+
+**Scenario**: Students can enroll in multiple courses, and each course can have multiple students enrolled.
+
+**Question**: Which relationship type should you configure between the Student and Course tables?
+
+**Options**:
+- A. One-to-Many (1:N)
+- B. Many-to-One (N:1)
+- C. Many-to-Many (N:N)
+- D. Lookup relationship
+
+**Correct Answer**: C. Many-to-Many (N:N)
+
+**Explanation**:
+- **N:N relationships**: Enable many-to-many associations without a custom intersection table
+- **1:N relationships**: One record in parent table relates to many records in child table (e.g., Account has many Contacts)
+- **N:1 relationships**: The reverse perspective of 1:N (many Contacts belong to one Account)
+- N:N relationships automatically create an intersection table
+- Lookups create 1:N or N:1 relationships, not N:N
+- Example: One student → many courses, One course → many students = N:N
+
+---
+
+### Question 51: Power Virtual Agents - System Fallback Topic
+
+**Scenario**: You created a Power Virtual Agents chatbot, but users complain that when they ask questions the bot doesn't understand, it doesn't provide helpful responses.
+
+**Question**: What should you configure to improve the user experience?
+
+**Options**:
+- A. Add more trigger phrases to existing topics
+- B. Configure the System Fallback topic
+- C. Create a new topic for each possible question
+- D. Increase the AI confidence threshold
+
+**Correct Answer**: B. Configure the System Fallback topic
+
+**Explanation**:
+- **System Fallback topic**: Triggers when the bot doesn't recognize user input
+- You should customize this topic to:
+  - Provide helpful alternative suggestions
+  - Transfer to a human agent
+  - Offer a menu of available topics
+  - Collect feedback
+- The default fallback message is often not helpful
+- This is different from adding trigger phrases (which helps recognition)
+- System topics like Fallback are built-in but can be customized
+
+---
+
+### Question 52: Component Libraries
+
+**Scenario**: You've created several reusable components (custom header, navigation menu, data card) that should be used across multiple canvas apps in your organization.
+
+**Question**: What is the recommended approach?
+
+**Options**:
+- A. Copy and paste the components into each app
+- B. Create a component library and share it
+- C. Export and import app packages
+- D. Create a template app
+
+**Correct Answer**: B. Create a component library and share it
+
+**Explanation**:
+- **Component libraries**: Centralized repository of reusable components
+- Benefits:
+  - Share components across multiple apps
+  - Centralized updates (change once, use everywhere)
+  - Import only needed components
+  - Better ALM support
+- App-level components are restricted to one app
+- Component libraries are the recommended approach per Microsoft
+- Located in: More > Discover all > Component libraries
+
+---
+
+### Question 53: Power BI Dataflows
+
+**Scenario**: You need to extract, transform, and load data from multiple sources (SQL Server, SharePoint, Excel) into Dataverse for use by multiple Power Apps and Power BI reports.
+
+**Question**: What should you use?
+
+**Options**:
+- A. Power Automate cloud flow
+- B. Power BI dataflow
+- C. Canvas app with collections
+- D. Virtual tables
+
+**Correct Answer**: B. Power BI dataflow
+
+**Explanation**:
+- **Power BI dataflows**: Self-service ETL tool for data preparation and transformation
+- Store transformed data in Azure Data Lake (Standard) or Dataverse (Analytical)
+- Benefits:
+  - Reusable data prep logic
+  - Scheduled refresh
+  - Power Query for transformations
+  - Multiple data sources
+- Different from datasets (which add DAX and relationships)
+- Power Automate is for process automation, not bulk ETL
+- Dataflows are specifically designed for data preparation scenarios
+
+---
+
+### Question 54: Power Automate Scope Action
+
+**Scenario**: You're creating a Power Automate cloud flow that creates several SharePoint list items based on conditions. If any SharePoint action fails, you must revert all changes made during the flow run.
+
+**Question**: What should you implement?
+
+**Options**:
+- A. Add Try-Catch actions
+- B. Add a Scope action with Configure run after settings
+- C. Enable flow error handling
+- D. Use parallel branches
+
+**Correct Answer**: B. Add a Scope action with Configure run after settings
+
+**Explanation**:
+- **Scope actions**: Group actions together and handle them as a unit
+- Use cases:
+  - Error handling (configure actions to run after scope fails)
+  - Transaction-like behavior
+  - Better organization of complex flows
+  - Simplified error tracking
+- Configure run after allows actions to run based on scope status (succeed, fail, skip, timeout)
+- Scopes are essential for implementing rollback/compensation logic
+- Power Automate doesn't have native transactions, so scopes help simulate them
+
+---
+
+### Question 55: Audit History Privileges
+
+**Scenario**: Users report they cannot see the audit history for Contact records, even though auditing is enabled on the Contact table and at the organization level.
+
+**Question**: What privilege must users have to view audit history?
+
+**Options**:
+- A. System Administrator role
+- B. View Audit History privilege
+- C. Read privilege on Contact table
+- D. Auditing Administrator role
+
+**Correct Answer**: B. View Audit History privilege
+
+**Explanation**:
+- **View Audit History**: Specific privilege required to view record audit logs
+- Requirements for viewing audit history:
+  1. Auditing enabled at organization level
+  2. Auditing enabled on the entity
+  3. User has "View Audit History" privilege
+  4. User has "View Audit Summary" for summary reports
+- System Administrator has these privileges, but they can be granted individually
+- Read privilege on the table is necessary but not sufficient
+- Users without this privilege see no audit option even if auditing is enabled
+
+---
+
+### Question 56: Share vs Assign in Dataverse
+
+**Scenario**: A contact record is owned by User A. User B needs temporary access to read and edit this specific contact record without changing ownership.
+
+**Question**: What should you do?
+
+**Options**:
+- A. Assign the record to User B
+- B. Share the record with User B
+- C. Add User B to an access team
+- D. Change User B's security role
+
+**Correct Answer**: B. Share the record with User B
+
+**Explanation**:
+- **Share**: Grants specific users/teams access to individual records without changing ownership
+- **Assign**: Transfers ownership of the record to another user/team
+- Key differences:
+  - Share: Original owner retained, temporary/specific access
+  - Assign: Ownership changes, all related records may cascade based on relationship behavior
+- Sharing allows granting Read, Write, Append, AppendTo, Delete privileges
+- Access teams are automatic based on templates; sharing is manual
+- Use Share when you want to grant access without changing ownership
+
+---
+
+### Question 57: Access Team Templates
+
+**Scenario**: You need to automatically grant access to Account records to all users listed in the Account's "Sales Team" subgrid without manually sharing each record.
+
+**Question**: What should you configure?
+
+**Options**:
+- A. Owner team
+- B. Access team with template
+- C. Azure AD Group team
+- D. Security role with User-level access
+
+**Correct Answer**: B. Access team with template
+
+**Explanation**:
+- **Access team templates**: Automatically create access teams for records based on a subgrid
+- How it works:
+  1. Create access team template for Account table
+  2. Define privileges (Read, Write, etc.)
+  3. Add template subgrid to Account form
+  4. Users added to subgrid automatically get defined access
+- **Owner teams**: Manual membership, own records
+- **Access teams (without template)**: Manual sharing to predefined team
+- **Access teams (with template)**: Automatic, record-specific access
+- Access teams don't own records; they just have access
+
+---
+
+### Question 58: Relationship Behavior - Referential vs Parental
+
+**Scenario**: You have a Project table and a Task table. When a project is deleted, tasks should remain but their lookup to the project should be cleared.
+
+**Question**: Which relationship behavior should you configure?
+
+**Options**:
+- A. Parental
+- B. Referential with Remove Link
+- C. Referential with Restrict Delete
+- D. Cascade None
+
+**Correct Answer**: B. Referential with Remove Link
+
+**Explanation**:
+- **Referential, Remove Link**: Child records remain; lookup is cleared (set to null) when parent is deleted
+- **Referential, Restrict Delete**: Prevents parent deletion if child records exist
+- **Parental**: Child records deleted when parent is deleted (cascades delete)
+- **Cascade None**: No action on child records (lookup remains pointing to deleted record - causes issues)
+- Referential behaviors are less restrictive than Parental
+- Use Referential Remove Link when child records are independent but reference parent
+
+---
+
+### Question 59: Power Virtual Agents - Entities for Age Groups
+
+**Scenario**: Your Power Virtual Agents chatbot needs to capture user age and categorize it into groups (Child: 0-12, Teen: 13-17, Adult: 18+) for routing conversations.
+
+**Question**: What should you configure?
+
+**Options**:
+- A. Create a Number entity and use conditions in the topic
+- B. Create a custom entity with age group values
+- C. Use the prebuilt Age entity
+- D. Use variables with if-then branches
+
+**Correct Answer**: A. Create a Number entity and use conditions in the topic
+
+**Explanation**:
+- **Best approach**: Capture age as a number, then use conditions (if-then branches) to categorize
+- **Entities**: Extract specific information types (dates, numbers, names) from user input
+- For age groups, you want:
+  1. Entity to capture the numeric age
+  2. Conditional logic to categorize into groups
+  3. Branch conversation based on category
+- Custom entities are for specific values/categories (colors, product types), not numeric ranges
+- There's no prebuilt "Age" entity; use Number entity
+- Conditions allow complex logic for ranges
+
+---
+
+### Question 60: N:1 Relationship Direction
+
+**Scenario**: You need to configure a relationship where multiple Contacts can be associated with one Account.
+
+**Question**: From the Contact table perspective, what is the relationship type?
+
+**Options**:
+- A. One-to-Many (1:N)
+- B. Many-to-One (N:1)
+- C. Many-to-Many (N:N)
+- D. Self-referential
+
+**Correct Answer**: B. Many-to-One (N:1)
+
+**Explanation**:
+- **Perspective matters**: Same relationship, different descriptions
+- **From Contact to Account**: Many contacts → One account = N:1 (Many-to-One)
+- **From Account to Contact**: One account → Many contacts = 1:N (One-to-Many)
+- When you add a lookup column on Contact pointing to Account, you create an N:1 relationship from Contact's perspective
+- Tip: "If table A has a lookup field to table B: A to B relationship is N:1"
+- The child table (Contact) has the N:1 relationship
+- The parent table (Account) has the 1:N relationship
+
+---
+
 ## Additional Practice Resources
 
 ### Official Microsoft Resources
