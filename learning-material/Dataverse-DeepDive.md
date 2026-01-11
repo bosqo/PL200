@@ -1915,4 +1915,4 @@ Restrict environment access to specific Azure AD security groups:
 
 ---
 
-*Continue to the next section: [Model-Driven Apps Deep Dive](./PL-200-ModelDrivenApps-DeepDive.md)*
+*Continue to the next section: [Model-Driven Apps Deep Dive](./ModelDrivenApps-DeepDive.md)*

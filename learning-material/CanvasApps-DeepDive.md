@@ -1474,4 +1474,4 @@ Gallery1.Items = Search(Accounts, SearchBox.Text, "Account Name", "City", "Indus
 
 ---
 
-*Continue to the next section: [Power Automate Deep Dive](./PL-200-PowerAutomate-DeepDive.md)*
+*Continue to the next section: [Power Automate Deep Dive](./PowerAutomate-DeepDive.md)*
