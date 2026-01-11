@@ -10,8 +10,10 @@
 4. [Columns (Fields) Complete Guide](#columns-fields-complete-guide)
 5. [Relationships Deep Dive](#relationships-deep-dive)
 6. [Security Model Explained](#security-model-explained)
-7. [Data Management](#data-management)
-8. [Common Exam Scenarios](#common-exam-scenarios)
+7. [Business Rules](#business-rules)
+8. [Solutions and Application Lifecycle Management](#solutions-and-application-lifecycle-management)
+9. [Data Management](#data-management)
+10. [Common Exam Scenarios](#common-exam-scenarios)
 
 ---
 
@@ -737,6 +739,601 @@ Based on assigned positions, not manager relationship.
 
 ---
 
+## Business Rules
+
+### What Are Business Rules?
+
+Business rules provide a **no-code way** to apply logic and validation to data in Dataverse. They run on the server and work across all interfaces (model-driven apps, canvas apps, Power Automate, API).
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    BUSINESS RULE                             │
+├─────────────────────────────────────────────────────────────┤
+│  IF Condition → THEN Action                                 │
+│  ┌─────────────┐         ┌─────────────┐                   │
+│  │  Condition  │ ──────► │   Action    │                   │
+│  │  Annual     │         │  Set Credit │                   │
+│  │  Revenue    │         │  Limit to   │                   │
+│  │  > $1M      │         │  $50K       │                   │
+│  └─────────────┘         └─────────────┘                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### When to Use Business Rules
+
+| Use Case | Example |
+|----------|---------|
+| **Field Validation** | Discount cannot exceed 50% |
+| **Set Field Values** | Set Status to "Approved" when Score > 80 |
+| **Show/Hide Fields** | Hide shipping fields if product is digital |
+| **Show Recommendations** | Show warning if expiration date is near |
+| **Lock/Unlock Fields** | Lock price after order is submitted |
+
+### Business Rule Scope
+
+**Critical for Exam:** Business rules have different scopes that determine WHERE they execute.
+
+| Scope | Where It Runs | Use When |
+|-------|---------------|----------|
+| **Entity (Table)** | Server-side, all interfaces | Universal logic needed everywhere |
+| **All Forms** | Client-side, all forms | Form-specific UI behavior |
+| **Specific Form** | Client-side, one form only | Form-specific requirements |
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                  SCOPE COMPARISON                            │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Entity (Table) Scope                                       │
+│  ├─► Model-Driven App Forms     ✓                          │
+│  ├─► Canvas Apps                ✓                          │
+│  ├─► Power Automate             ✓                          │
+│  ├─► Web API                    ✓                          │
+│  └─► Mobile Apps                ✓                          │
+│                                                              │
+│  Form Scope                                                 │
+│  ├─► Model-Driven App Forms     ✓                          │
+│  ├─► Canvas Apps                ✗                          │
+│  ├─► Power Automate             ✗                          │
+│  ├─► Web API                    ✗                          │
+│  └─► Mobile Apps                ✗                          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+> **Exam Tip**: If logic must work in Canvas Apps, Power Automate, or via API, use **Entity (Table) scope**, NOT form scope.
+
+### Available Actions
+
+Business rules can perform these actions:
+
+| Action | Description | Example |
+|--------|-------------|---------|
+| **Set Field Value** | Populate a field automatically | Set Priority = "High" when Amount > $10,000 |
+| **Show Error Message** | Display validation error | "End Date cannot be before Start Date" |
+| **Show Recommendation** | Display non-blocking message | "Consider adding a phone number" |
+| **Set Business Required** | Make field mandatory | Require approval when discount > 20% |
+| **Lock or Unlock Field** | Enable/disable editing | Lock price after approval |
+| **Set Visibility** | Show/hide field | Hide shipping address for digital products |
+| **Set Default Value** | Set initial value | Default Country = "USA" |
+
+### Conditions
+
+Business rules support logical conditions:
+
+**Operators Available:**
+- Equals / Does not equal
+- Contains / Does not contain
+- Begins with / Does not begin with
+- Ends with / Does not end with
+- Contains data / Does not contain data
+- Greater than / Less than
+- On or after / On or before
+
+**Logical Grouping:**
+```
+IF (Revenue > $1M AND Industry = "Technology")
+   OR (Customer Type = "Enterprise")
+THEN
+   Set Credit Limit = $100,000
+```
+
+### Business Rule Limitations
+
+**Critical Limitations (Frequently Tested):**
+
+| Limitation | Description | Workaround |
+|------------|-------------|------------|
+| **No Cross-Table Logic** | Cannot reference related table fields | Use JavaScript or Power Automate |
+| **No Complex Calculations** | Limited mathematical operations | Use Formula columns or JavaScript |
+| **No Real-Time Field Updates** | Won't trigger on field changes from other rules | Use JavaScript for cascading logic |
+| **No Async Operations** | Cannot wait for external services | Use Power Automate |
+| **Limited to 10 Conditions** | Maximum 10 condition groups per rule | Split into multiple rules or use code |
+| **No Workflow Triggering** | Cannot start flows or processes | Use Power Automate trigger instead |
+| **Form Scope = Client Only** | Not enforced via API if form-scoped | Use Entity scope for server-side |
+| **No Create/Update Operations** | Cannot create new records | Use Power Automate or plugins |
+
+**What Business Rules CANNOT Do:**
+
+❌ Access data from related tables (lookups)
+❌ Call external web services
+❌ Create or update related records
+❌ Execute based on time/schedule
+❌ Send emails or notifications
+❌ Run JavaScript functions
+❌ Access user information (current user)
+❌ Perform complex string manipulations
+
+> **Exam Scenario**: "A business rule must validate that a contact's city matches their account's city."
+→ **Answer**: This is NOT possible with business rules (cross-table logic). Use JavaScript or Power Automate instead.
+
+### Business Rules vs. Other Options
+
+| Requirement | Solution |
+|-------------|----------|
+| Simple field validation on one table | **Business Rule** |
+| Show/hide fields based on values | **Business Rule** |
+| Validate against related table data | **JavaScript** |
+| Create related records | **Power Automate** |
+| Complex calculations across tables | **Power Automate** or **Plugins** |
+| Send notifications | **Power Automate** |
+| Real-time cascading updates | **JavaScript** |
+| Server-side logic for all interfaces | **Business Rule (Entity scope)** or **Plugins** |
+
+### Creating Business Rules - Best Practices
+
+**Design Considerations:**
+
+1. **Choose Correct Scope**
+   - Need it in Canvas Apps/API? → Entity scope
+   - UI-only validation? → Form scope acceptable
+
+2. **Keep It Simple**
+   - One rule per logical requirement
+   - Avoid complex nested conditions
+   - Clear, descriptive names
+
+3. **Test Thoroughly**
+   - Test in all interfaces if Entity-scoped
+   - Test with different user security roles
+   - Verify error messages are user-friendly
+
+4. **Performance**
+   - Too many rules can slow form loads
+   - Consider combining related logic
+   - Entity-scoped rules add server processing
+
+### Execution Order
+
+When multiple business rules exist:
+
+```
+1. Business Rules (Entity Scope) - Server-side
+2. Synchronous Plugins (Pre-Operation)
+3. Database Operation
+4. Synchronous Plugins (Post-Operation)
+5. Asynchronous Plugins
+6. Business Rules (Form Scope) - Client-side
+7. JavaScript (OnChange, OnLoad, OnSave)
+```
+
+> **Exam Tip**: Entity-scoped business rules execute BEFORE form-scoped rules and JavaScript.
+
+### Common Exam Scenarios
+
+**Scenario 1:**
+"Users should see a warning if the discount exceeds 30%, but still allow save."
+→ **Answer**: Show Recommendation action (non-blocking)
+
+**Scenario 2:**
+"Prevent saving if End Date is before Start Date."
+→ **Answer**: Show Error Message action (blocking)
+
+**Scenario 3:**
+"Logic must work in model-driven apps, canvas apps, and Power Automate."
+→ **Answer**: Entity (Table) scope
+
+**Scenario 4:**
+"When opportunity amount exceeds $100K, automatically set the approval field to required."
+→ **Answer**: Business rule with "Set Business Required" action
+
+**Scenario 5:**
+"Validate that a project's budget doesn't exceed the account's annual revenue."
+→ **Answer**: NOT possible with business rules (cross-table). Use JavaScript or Power Automate.
+
+---
+
+## Solutions and Application Lifecycle Management
+
+### What Are Solutions?
+
+Solutions are **containers** that package your customizations and configurations for transport between environments. Think of them as deployment packages for Power Platform.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      SOLUTION                                │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
+│  │   Tables    │  │    Forms    │  │   Views     │        │
+│  └─────────────┘  └─────────────┘  └─────────────┘        │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
+│  │   Flows     │  │  Plugins    │  │ Security    │        │
+│  │             │  │             │  │  Roles      │        │
+│  └─────────────┘  └─────────────┘  └─────────────┘        │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
+│  │   Canvas    │  │  Business   │  │   Charts    │        │
+│  │    Apps     │  │   Rules     │  │             │        │
+│  └─────────────┘  └─────────────┘  └─────────────┘        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Solution Types: Managed vs. Unmanaged
+
+**This is one of the MOST TESTED topics on the exam!**
+
+#### Unmanaged Solutions
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│              UNMANAGED SOLUTION                              │
+├─────────────────────────────────────────────────────────────┤
+│  ✓ Fully editable                                           │
+│  ✓ Components can be modified directly                      │
+│  ✓ Components can be removed individually                   │
+│  ✓ Used for DEVELOPMENT                                     │
+│  ✓ Components become part of Default Solution               │
+│  ✗ No update path                                           │
+│  ✗ Cannot be uninstalled cleanly                            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Use Unmanaged Solutions When:**
+- Working in DEV environment
+- Building and testing customizations
+- Need to modify components directly
+- Iterating and making changes
+
+**Key Characteristics:**
+- All components are unlocked
+- Can add/remove components freely
+- Components merge with Default Solution
+- No dependency protection
+- Cannot track "what came from where"
+
+#### Managed Solutions
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│               MANAGED SOLUTION                               │
+├─────────────────────────────────────────────────────────────┤
+│  ✓ Locked and protected                                     │
+│  ✓ Can be uninstalled cleanly                               │
+│  ✓ Can be updated/upgraded                                  │
+│  ✓ Used for TEST and PRODUCTION                             │
+│  ✓ Maintains dependencies                                   │
+│  ✗ Cannot modify components directly                        │
+│  ✗ Cannot delete individual components                      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Use Managed Solutions When:**
+- Deploying to TEST/PROD environments
+- Distributing to customers/other organizations
+- Need clean uninstall capability
+- Want to protect intellectual property
+- Need version control and updates
+
+**Key Characteristics:**
+- Components are locked (cannot edit)
+- Solution tracks all its components
+- Can be uninstalled (removes all components)
+- Supports versioning (1.0, 1.1, 2.0)
+- Dependency tracking enforced
+- Appears separate from Default Solution
+
+### Managed vs. Unmanaged: Side-by-Side Comparison
+
+| Feature | Unmanaged | Managed |
+|---------|-----------|---------|
+| **Editable** | ✅ Yes | ❌ No (locked) |
+| **Can Uninstall** | ❌ No | ✅ Yes (clean removal) |
+| **Can Update** | N/A | ✅ Yes (version upgrades) |
+| **Environment** | Development | Test, Production |
+| **Components Visible in Default** | ✅ Yes | ❌ No (separate) |
+| **Can Remove Single Component** | ✅ Yes | ❌ No (must uninstall solution) |
+| **Dependency Protection** | ❌ No | ✅ Yes |
+| **IP Protection** | ❌ No | ✅ Yes |
+| **Customization Allowed** | ✅ Full | ⚠️ Limited (managed properties) |
+
+### Solution Layers
+
+When both managed and unmanaged customizations exist, **layers** are created:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     LAYERING                                 │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Active Layer (What user sees)                              │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │  Unmanaged Customizations (Default Solution)       │    │
+│  │  Priority: HIGHEST                                  │    │
+│  └────────────────────────────────────────────────────┘    │
+│                         ↓                                    │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │  Managed Solution: Latest Version                   │    │
+│  │  Priority: HIGH                                     │    │
+│  └────────────────────────────────────────────────────┘    │
+│                         ↓                                    │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │  Managed Solution: Older Version                    │    │
+│  │  Priority: MEDIUM                                   │    │
+│  └────────────────────────────────────────────────────┘    │
+│                         ↓                                    │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │  System Base Layer                                  │    │
+│  │  Priority: LOWEST                                   │    │
+│  └────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Layer Priority Rules:**
+1. **Unmanaged customizations ALWAYS win** (top layer)
+2. Newest managed solution overrides older ones
+3. System base layer is the foundation
+
+> **Exam Tip**: Unmanaged changes override managed solutions. To apply managed solution updates, remove unmanaged customizations first.
+
+### Managed Properties
+
+Control what can be customized in a managed solution.
+
+**Common Managed Properties:**
+
+| Property | What It Controls |
+|----------|------------------|
+| **Can be customized** | Whether component can be modified |
+| **Can be deleted** | Whether component can be removed |
+| **Can be renamed** | Display name changes |
+| **Can change additional properties** | Specific attribute modifications |
+| **Can create new forms** | Add forms to entity |
+| **Can create new charts** | Add visualizations |
+
+**Example Configuration:**
+```
+Table: "Project"
+├─ Can be customized: ✓ Yes (allow minor changes)
+│   ├─ Display name can be changed: ✓ Yes
+│   ├─ Can create forms: ✓ Yes
+│   └─ Can add fields: ✗ No (locked)
+└─ Can be deleted: ✗ No (protected)
+```
+
+> **Exam Scenario**: "Allow customers to rename tables but not delete them."
+→ **Answer**: Set "Can be customized" = Yes, "Can be deleted" = No in managed properties.
+
+### Application Lifecycle Management (ALM)
+
+ALM is the process of managing solutions across environments.
+
+#### Standard ALM Flow
+
+```
+┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+│     DEV     │      │    TEST     │      │    PROD     │
+│             │      │             │      │             │
+│ Unmanaged   │──────►  Managed    │──────►  Managed    │
+│ Solution    │Export│  Solution   │Export│  Solution   │
+│             │Import│             │Import│             │
+│ ✎ Edit      │      │ ✓ Validate  │      │ ✓ Live      │
+│ ✎ Build     │      │ ✓ Test      │      │ ⚠ Protected │
+└─────────────┘      └─────────────┘      └─────────────┘
+     Make                 Verify               Deploy
+   Changes               Quality              to Users
+```
+
+**Process Steps:**
+
+1. **Development (DEV)**
+   - Create unmanaged solution
+   - Add components (tables, forms, flows)
+   - Test and iterate
+   - Export as **MANAGED** solution
+
+2. **Testing (TEST)**
+   - Import managed solution
+   - Perform UAT (User Acceptance Testing)
+   - Validate functionality
+   - Do NOT make direct changes
+
+3. **Production (PROD)**
+   - Import managed solution
+   - Deploy to end users
+   - Monitor and support
+   - Do NOT make direct changes
+
+> **Critical Rule**: Changes go DEV → TEST → PROD. NEVER edit directly in TEST or PROD.
+
+### Solution Import Types
+
+When importing a solution, you have options:
+
+| Import Type | What Happens | Use When |
+|-------------|--------------|----------|
+| **Update** | Adds new components, updates existing | Normal deployments |
+| **Upgrade** | Replaces previous version, removes deleted items | Major version changes |
+| **Stage for Upgrade** | Imports but doesn't apply yet | Want to review before applying |
+
+**Update vs. Upgrade:**
+
+```
+UPDATE                           UPGRADE
+┌─────────────────┐             ┌─────────────────┐
+│ Old: Table A    │             │ Old: Table A    │
+│ Old: Table B    │             │ Old: Table B    │
+│ Old: Form X     │             │ Old: Form X     │
+└─────────────────┘             └─────────────────┘
+        ↓                                ↓
+Import Solution                 Import Solution
+        ↓                                ↓
+┌─────────────────┐             ┌─────────────────┐
+│ Old: Table A    │             │ New: Table A    │
+│ New: Table B    │ ← Updated   │ New: Table C    │ ← Replaced
+│ Old: Form X     │ ← Unchanged │ New: Form Y     │ ← Old removed
+│ New: Table C    │ ← Added     └─────────────────┘
+└─────────────────┘
+Keeps old components            Removes old components
+```
+
+> **Exam Tip**: Use **Upgrade** when you've removed components in DEV and want them removed from target environment.
+
+### Solution Dependencies
+
+Dependencies prevent breaking changes.
+
+**Example:**
+```
+Solution A                    Solution B
+┌─────────────────┐          ┌─────────────────┐
+│ Account Table   │◄─────────│ Custom Form     │
+│                 │ depends  │ (uses Account)  │
+└─────────────────┘   on     └─────────────────┘
+
+❌ Cannot uninstall Solution A while Solution B exists
+✓ Must uninstall Solution B first
+```
+
+**Dependency Types:**
+
+| Type | Description | Can Break |
+|------|-------------|-----------|
+| **Published** | Component references another | Yes - blocks uninstall |
+| **Unpublished** | Draft references | No - warning only |
+| **Internal** | Within same solution | No - managed together |
+
+### Common ALM Scenarios (Exam Focused)
+
+**Scenario 1:**
+"You need to deploy customizations to production and ensure they can be cleanly removed later if needed."
+→ **Answer**: Export as **Managed** solution and import to production.
+
+**Scenario 2:**
+"Developers need to make changes to tables and test them iteratively."
+→ **Answer**: Use **Unmanaged** solution in DEV environment.
+
+**Scenario 3:**
+"A managed solution was imported to production, but users need a custom field. How should this be added?"
+→ **Answer**: Add field in DEV, export managed solution, and upgrade in production. (Do NOT add directly in PROD)
+
+**Scenario 4:**
+"After importing a solution update, some components show 'unmanaged' customizations."
+→ **Answer**: Someone made direct changes in the target environment. Remove unmanaged layer or recreate in managed solution.
+
+**Scenario 5:**
+"You need to allow customers to modify table display names but protect form configurations."
+→ **Answer**: Configure managed properties: Allow customization of display names, but lock forms.
+
+**Scenario 6:**
+"How to completely remove all components of a solution from an environment?"
+→ **Answer**: Only possible with **Managed** solutions. Unmanaged solutions cannot be cleanly uninstalled.
+
+### Solution Publisher
+
+Every solution has a publisher that defines:
+
+- **Prefix**: Used for schema names (e.g., `abc_CustomTable`)
+- **Display Name**: Organization name
+- **Option Value Prefix**: Number prefix for choices (e.g., 10000)
+
+**Why It Matters:**
+- Prevents naming conflicts
+- Identifies component ownership
+- Required for AppSource submissions
+
+```
+Publisher: Contoso
+├─ Prefix: contoso_
+└─ Tables created:
+    ├─ contoso_project
+    ├─ contoso_task
+    └─ contoso_invoice
+```
+
+> **Exam Tip**: Custom publishers should be created BEFORE building solutions. Default publisher is "Default Publisher" with prefix "new_".
+
+### Environment Strategy
+
+**Typical Environment Setup:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  DEV Environment(s)                                          │
+│  • Individual developer sandboxes                            │
+│  • Unmanaged solutions                                       │
+│  • Frequent changes                                          │
+└──────────────────────┬───────────────────────────────────────┘
+                       │ Export Managed
+                       ↓
+┌─────────────────────────────────────────────────────────────┐
+│  BUILD Environment (Optional)                                │
+│  • Integration of multiple solutions                         │
+│  • Automated builds                                          │
+│  • Testing integrations                                      │
+└──────────────────────┬───────────────────────────────────────┘
+                       │ Export Managed
+                       ↓
+┌─────────────────────────────────────────────────────────────┐
+│  TEST/UAT Environment                                        │
+│  • User acceptance testing                                   │
+│  • Managed solutions only                                    │
+│  • Mirrors production configuration                          │
+└──────────────────────┬───────────────────────────────────────┘
+                       │ Export Managed
+                       ↓
+┌─────────────────────────────────────────────────────────────┐
+│  PRODUCTION Environment                                      │
+│  • Live user data                                            │
+│  • Managed solutions only                                    │
+│  • Locked down security                                      │
+│  • Change control process                                    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Best Practices for Solutions
+
+1. **Use Version Numbers Properly**
+   - Semantic versioning: Major.Minor.Build.Revision
+   - Example: 1.0.0.0 → 1.0.1.0 (patch) → 1.1.0.0 (minor) → 2.0.0.0 (major)
+
+2. **Keep Solutions Focused**
+   - One solution per business capability
+   - Avoid "mega solutions" with everything
+
+3. **Never Mix Managed and Unmanaged**
+   - DEV = Unmanaged only
+   - TEST/PROD = Managed only
+
+4. **Use Source Control**
+   - Export solutions regularly
+   - Store in Git/Azure DevOps
+   - Track changes over time
+
+5. **Document Dependencies**
+   - Know what depends on what
+   - Plan uninstall order
+   - Test in non-prod first
+
+6. **Test Solution Imports**
+   - Always test in lower environment first
+   - Validate dependencies are met
+   - Check for naming conflicts
+
+7. **Handle Connection References**
+   - Solutions may contain flows with connections
+   - Connections must be recreated in target environment
+   - Use environment variables for configuration
+
+---
+
 ## Data Management
 
 ### Import Options
@@ -828,6 +1425,14 @@ Based on assigned positions, not manager relationship.
 6. **Alternate Keys enforce uniqueness** - not just for integration
 7. **Business Units are hierarchical** - affects security inheritance
 8. **Field Security is separate from Table Security** - both must be configured
+9. **Business Rules cannot reference related tables** - use JavaScript or Power Automate for cross-table logic
+10. **Entity-scoped business rules run server-side** - work in all interfaces including Canvas Apps and API
+11. **Form-scoped business rules are client-only** - don't work via API or in Canvas Apps
+12. **Managed solutions can be uninstalled** - unmanaged solutions cannot
+13. **DEV uses unmanaged, TEST/PROD use managed** - never mix them in the same environment
+14. **Unmanaged customizations override managed** - creates solution layers
+15. **Managed properties control customization** - set before exporting as managed
+16. **Solution upgrade removes old components** - update keeps them
 
 ---
 
