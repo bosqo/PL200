@@ -660,6 +660,138 @@ You need to create a lookup column that can reference either an Account OR a Con
 
 ---
 
+### Question 48
+You receive a lead for "John Smith at Contoso Ltd". When you qualify the lead, you discover that Contoso Ltd already exists as an Account in your system, but John Smith is a new contact.
+
+**Which records will be created when you qualify this lead?**
+
+- A) Account, Contact, and Opportunity
+- B) Contact and Opportunity only
+- C) Opportunity only
+- D) Contact only
+
+---
+
+### Question 49
+Your sales team uses Opportunities to track deals. Each opportunity has an Estimated Revenue of $100,000 and a Probability of 60%.
+
+**What will be the Weighted Revenue for this opportunity?**
+
+- A) $100,000
+- B) $60,000
+- C) $40,000
+- D) Weighted Revenue must be manually entered
+
+---
+
+### Question 50
+A lead has been in your system for 90 days and was previously disqualified with status reason "No Longer Interested". The contact has now reached out expressing renewed interest.
+
+**What should you do?**
+
+- A) Create a new lead
+- B) Reactivate the existing lead
+- C) Manually create an opportunity and link to the old lead
+- D) Delete the old lead and start fresh
+
+---
+
+### Question 51
+An opportunity has been marked as Won with an Estimated Revenue of $100,000. The actual deal closed for $95,000.
+
+**What happens to the revenue fields?**
+
+- A) Estimated Revenue is automatically updated to $95,000
+- B) Actual Revenue must be manually entered as $95,000
+- C) Both fields remain at $100,000
+- D) The system calculates the variance automatically
+
+---
+
+### Question 52
+You are configuring a sales process. Sales representatives need to verify Budget, Authority, Need, and Timeline before creating an opportunity from a lead.
+
+**Which framework are you implementing?**
+
+- A) SMART
+- B) BANT
+- C) SWOT
+- D) RACI
+
+---
+
+### Question 53
+A lead was qualified and converted to an Account, Contact, and Opportunity. You need to trace which lead generated a specific opportunity.
+
+**Which field on the Opportunity record contains this information?**
+
+- A) Lead Source
+- B) Created By
+- C) Originating Lead
+- D) Parent Lead
+
+---
+
+### Question 54
+You need to report on all opportunities that are currently open and in progress.
+
+**Which Status and Status Reason combination should you filter on?**
+
+- A) Status = Open, Status Reason = In Progress
+- B) Status = Active, Status Reason = Open
+- C) Status = In Progress, Status Reason = Active
+- D) Status = Open, Status Reason = Active
+
+---
+
+### Question 55
+A company's sales process requires that when a lead is qualified, an opportunity should NOT be created automatically. They want to manually create opportunities later after additional qualification steps.
+
+**What should you configure during lead qualification?**
+
+- A) Disable the Lead Qualification Process in settings
+- B) Uncheck the "Create Opportunity" option when qualifying
+- C) Use a custom workflow to prevent opportunity creation
+- D) This is not possible; opportunities are always created
+
+---
+
+### Question 56
+You need to prevent duplicate leads from being created when the same email address and company name already exist.
+
+**What should you create?**
+
+- A) Business rule to validate email and company
+- B) Alternate key on Email + Company Name columns
+- C) Duplicate detection rule matching Email and Company Name
+- D) Calculated column to check for duplicates
+
+---
+
+### Question 57
+Your sales pipeline report needs to show realistic revenue forecasts based on the probability of closing each deal.
+
+**Which field should you use in your report?**
+
+- A) Estimated Revenue
+- B) Actual Revenue
+- C) Weighted Revenue
+- D) Budget Amount
+
+---
+
+### Question 58
+A lead has Status = "Disqualified" and Status Reason = "Lost". The sales team wants to track which competitor won the deal.
+
+**What should you do?**
+
+- A) Add a custom Status Reason for each competitor
+- B) Create a lookup column to a Competitors table
+- C) Use the Description field
+- D) Create a global choice field for Competitors and add it to the Lead form
+
+---
+
 ## Section 5 Answers
 
 | Q | Answer | Explanation |
@@ -668,18 +800,31 @@ You need to create a lookup column that can reference either an Account OR a Con
 | 44 | **B** | Autonumber provides sequential numbers. A flow can check if divisible by 10 (every 10th = 10%). |
 | 45 | **B** | Autonumber columns auto-generate sequential, read-only, predictable identifiers. |
 | 46 | **C** | Customer type is a built-in polymorphic lookup that can reference Account or Contact. |
+| 48 | **B** | During qualification, you can choose to use an existing Account. Since Contoso exists, only Contact (new person) and Opportunity (new deal) are created. |
+| 49 | **B** | Weighted Revenue = Estimated Revenue × Probability. $100,000 × 60% = $60,000. This provides realistic forecasting. |
+| 50 | **B** | Leads can be reactivated after being disqualified. This maintains the history and allows re-qualification without creating duplicates. |
+| 51 | **B** | When an opportunity is marked as Won, the Actual Revenue must be manually entered. Estimated Revenue remains unchanged for reporting/variance analysis. |
+| 52 | **B** | BANT (Budget, Authority, Need, Timeline) is a sales qualification framework used to determine if a lead should become an opportunity. |
+| 53 | **C** | The Originating Lead field on an Opportunity record maintains a link back to the Lead that was qualified to create it. |
+| 54 | **A** | Open opportunities have Status = "Open" and Status Reason = "In Progress" by default. Won/Lost opportunities have different status values. |
+| 55 | **B** | During the qualify lead process, you can uncheck "Create Opportunity" if you only want to create Account/Contact without an opportunity. |
+| 56 | **C** | Duplicate detection rules identify and optionally prevent duplicate records based on specified field combinations. Alternate keys enforce uniqueness but are primarily for integration. |
+| 57 | **C** | Weighted Revenue (Estimated Revenue × Probability) provides the most realistic forecast. Estimated Revenue alone is too optimistic. |
+| 58 | **D** | Create a global choice field for Competitors that can be reused across multiple tables (Leads, Opportunities). Add it to relevant forms for tracking competitor information. |
 
 ---
 
 ## Scoring Guide
 
+**Total Questions: 57**
+
 | Score | Recommendation |
 |-------|----------------|
-| **45-50** | Excellent! You're ready for the exam. |
-| **40-44** | Good foundation. Review weak areas. |
-| **35-39** | More study needed. Focus on missed topics. |
-| **30-34** | Significant gaps. Work through study guide thoroughly. |
-| **Below 30** | Recommend comprehensive study before attempting exam. |
+| **52-57** | Excellent! You're ready for the exam. |
+| **46-51** | Good foundation. Review weak areas. |
+| **40-45** | More study needed. Focus on missed topics. |
+| **34-39** | Significant gaps. Work through study guide thoroughly. |
+| **Below 34** | Recommend comprehensive study before attempting exam. |
 
 ---
 

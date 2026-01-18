@@ -4,7 +4,12 @@
       "Bash(dir:*)",
       "Bash(git -C \"D:\\\\_Repo\\\\repos\\\\PL200\" show HEAD:README.md)",
       "Bash(tree:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebSearch",
+      "Skill(superpowers:brainstorming)",
+      "WebFetch(domain:www.youtube.com)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
